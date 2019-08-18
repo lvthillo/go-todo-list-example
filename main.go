@@ -17,6 +17,8 @@ func main() {
 	r.DELETE("/todo/:id", handlers.DeleteTodoHandler)
 	//PUT: This endpoint enables users to change a to-do item from incomplete to complete.
 	r.PUT("/todo", handlers.CompleteTodoHandler)
+	//GET: This endpoint enables users to retrieve one item of the todo-list based on ID.
+	r.GET("/todo/:id", handlers.GetTodoItemHandler)
 
 	// run server on 3000 and panics when error occurs.
 	err := r.Run(":3000")

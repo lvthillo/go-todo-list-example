@@ -46,6 +46,33 @@ func Get() []Todo {
 	return list
 }
 
+// GetItem will use findTodoLocation and showElementByLocation to get and show the item.
+// func GetItem(id string) (Todo, error) {
+// 	location, err := findTodoLocation(id)
+// 	if err != nil {
+// 		return Todo{"", "", false}, err
+// 	}
+// 	return showElementByLocation(location), nil
+// }
+
+// GetItem will use findTodoLocation and showElementByLocation to get and show the item.
+// Instead of returning (Todo, error) we can update this function to return a pointer to Todo (for which 'nil' is valid) and error.
+// So we don't have to return the zero value of our struct.
+func GetItem(id string) (*Todo, error) {
+	location, err := findTodoLocation(id)
+	if err != nil {
+		// for a pointer we can return a nil
+		return nil, err
+	}
+	// showElementByLocation return the in-memory address of an item object.
+	// This function returns a pointer (*) to this in-memory address = the normal value
+	// implicitly this happens:
+	// test := showElementByLocation(location)
+	// fmt.Printf("item1: %p", test) --> in memory location of 'test'
+	// fmt.Printf("item2: %v", *test) --> value of 'test'
+	return showElementByLocation(location), err
+}
+
 // Add will add a new todo based on a message
 // use the mutex here to lock and unlock your message creation to avoid a race condition.
 // as your server might handle multiple operations at the same time and these operations try to access the same memory, you can run into a race-condition that might make Golang crash.
@@ -113,6 +140,28 @@ func findTodoLocation(id string) (int, error) {
 		}
 	}
 	return 0, errors.New("could not find todo based on id")
+}
+
+// show Todo struct based on location int he list (= i parameter)
+// func showElementByLocation(i int) Todo {
+// 	// lock
+// 	mtx.RLock()
+// 	item := list[i]
+// 	// unlock
+// 	mtx.RUnlock()
+// 	return item
+// }
+
+// show Todo struct based on location int he list (= i parameter)
+// This function returns the address in memory where the Todo struct is stored in the list.
+func showElementByLocation(i int) *Todo {
+	// lock
+	mtx.RLock()
+	item := list[i]
+	// unlock
+	mtx.RUnlock()
+	// return in-memory address of item (to check with: fmt.Printf("item: %p", &item))
+	return &item
 }
 
 // remove Todo struct based on location in the list (= i parameter)

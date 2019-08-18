@@ -58,6 +58,17 @@ func CompleteTodoHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, "")
 }
 
+// GetTodoItemHandler returns a specific todo item based on ID
+func GetTodoItemHandler(c *gin.Context) {
+	todoID := c.Param("id")
+	item, err := todo.GetItem(todoID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, err)
+		return
+	}
+	c.JSON(http.StatusOK, item)
+}
+
 func convertHTTPBodyToTodo(httpBody io.ReadCloser) (todo.Todo, int, error) {
 	body, err := ioutil.ReadAll(httpBody)
 	if err != nil {
